@@ -10,7 +10,7 @@ pub type JsonObject = HashMap<String, serde_json::Value>;
 pub type Cache = DashMap<String, JsonObject>;
 
 /// A type alias for a translation file.
-const EXTS: [&str; 4] = ["json", "toml", "yaml", "yml"];
+const SUPPORTED_EXTENSIONS: [&str; 4] = ["json", "toml", "yaml", "yml"];
 
 /// Resolves a file path to a PathBuf.
 ///
@@ -25,13 +25,13 @@ pub fn resolve_path(file: &str) -> Result<PathBuf> {
   }
 
   let base_path = path.with_extension("");
-  for ext in EXTS {
+  for ext in SUPPORTED_EXTENSIONS {
     let path_with_ext = base_path.with_extension(ext);
     if path_with_ext.exists() && path_with_ext.is_file() {
       return Ok(path_with_ext);
     }
   }
-  Err(Error::new(Status::InvalidArg, format!("File not found \"{file}\"")))
+  Err(Error::new(Status::InvalidArg, format!("File not found '{file}'")))
 }
 
 /// Parses a file at the given path into a TObject.
@@ -49,19 +49,12 @@ pub fn parse(full_path: &str) -> Result<JsonObject> {
     )
   })?;
 
-  parse_content(&content, path.get_extension())
-}
-
-/// Parses a string content into a TObject based on the file extension.
-///
-/// # Errors
-/// Returns an Error if the content cannot be parsed of the file extension is invalid.
-#[inline]
-pub fn parse_content<T: serde::de::DeserializeOwned>(content: &str, ext: &str) -> Result<T> {
-  match ext {
-    "json" => Ok(serde_json::from_str::<T>(content)?),
-    "toml" => toml::from_str::<T>(content).map_err(|e| Error::new(Status::GenericFailure, e)),
-    "yaml" | "yml" => serde_yml::from_str::<T>(content).map_err(|e| Error::new(Status::GenericFailure, e)),
+  match path.get_extension() {
+    "json" => Ok(serde_json::from_slice::<JsonObject>(content.as_bytes())?),
+    "toml" => toml::from_str::<JsonObject>(&content).map_err(|e| Error::new(Status::GenericFailure, e)),
+    "yaml" | "yml" => {
+      serde_yml::from_slice::<JsonObject>(content.as_bytes()).map_err(|e| Error::new(Status::GenericFailure, e))
+    }
     _ => Err(Error::new(Status::InvalidArg, "Invalid file extension")),
   }
 }

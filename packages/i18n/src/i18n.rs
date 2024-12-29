@@ -81,15 +81,13 @@ impl I18n {
 
     let i18n = I18n {
       directory: dir.normalize(),
-      locale: options.default.unwrap_or(options.locales[0].clone()),
-      fallback: options.fallback.unwrap_or(options.locales[0].clone()),
+      locale: options.default.unwrap_or_else(|| options.locales[0].clone()),
+      fallback: options.fallback.unwrap_or_else(|| options.locales[0].clone()),
       locales: options.locales,
     };
 
-    if let Some(preload) = options.preload {
-      if preload && CACHE.is_empty() {
-        i18n.load(None)?;
-      }
+    if options.preload.unwrap_or(false) && CACHE.is_empty() {
+      i18n.load(None)?;
     }
 
     Ok(i18n)
@@ -190,21 +188,18 @@ impl I18n {
       return Err(Error::new(Status::InvalidArg, "Invalid locale provided"));
     }
 
-    // keys - [] invalid
-    // keys is 1 (min: 2) invalid
-    // keys[0] is 0 (min: 1 len) invalid
     let keys = key.split(':').collect::<Vec<_>>();
     if keys.len() < 2 || keys[0].is_empty() {
       return Err(Error::new(Status::InvalidArg, "Invalid key provided"));
     }
 
     let file_path = format!("{}/{}/{}", &self.directory, &locale, keys[0]);
-    let Some(translations) = CACHE.get(&file_path) else {
-      return Err(Error::new(
+    let translations = CACHE.get(&file_path).ok_or_else(|| {
+      Error::new(
         Status::InvalidArg,
         format!("Translation not found for \"{}/{}\"", &locale, keys[0]),
-      ));
-    };
+      )
+    })?;
 
     let data = if keys[1].contains('.') {
       let fragments: Vec<_> = keys[1].split('.').collect();
@@ -226,7 +221,7 @@ impl I18n {
             args
               .get(key)
               .map(|a| a.to_string().replace('"', ""))
-              .unwrap_or("??".to_string())
+              .unwrap_or_else(|| "??".to_string())
           });
           return Ok(result.to_string());
         }
@@ -245,12 +240,9 @@ impl I18n {
   // -- Internal methods --
 
   fn load_file(&self, file_path: &str, is_absolute: bool) -> Result<()> {
-    let Some(caps) = FILENAME_RE.captures(file_path) else {
-      return Err(Error::new(
-        Status::Unknown,
-        format!("Unable to parse filename \"{}\"", file_path),
-      ));
-    };
+    let caps = FILENAME_RE
+      .captures(file_path)
+      .ok_or_else(|| Error::new(Status::Unknown, format!("Unable to parse filename \"{}\"", file_path)))?;
     let name = caps.get(if is_absolute { 1 } else { 0 }).unwrap().as_str();
     let table = parse(file_path)?;
     CACHE.entry(name.to_string()).or_insert(table);
@@ -264,24 +256,22 @@ impl I18n {
       if entry.is_file() {
         let full_path = entry.normalize();
 
-        let Some(locale) = LOCALE_RE
+        let locale = LOCALE_RE
           .captures(&full_path)
           .and_then(|c| c.get(0))
-          .map(|s| s.as_str())
-        else {
-          // debug
-          continue;
-        };
+          .map(|s| s.as_str());
 
-        if let Some(load_locale) = load_locale {
-          if locale == load_locale {
+        if let Some(locale) = locale {
+          if let Some(load_locale) = load_locale {
+            if locale == load_locale {
+              self.load_file(&full_path, true)?;
+            }
+            continue;
+          }
+
+          if self.locales.contains(&locale.to_string()) {
             self.load_file(&full_path, true)?;
           }
-          continue;
-        }
-
-        if self.locales.contains(&locale.to_string()) {
-          self.load_file(&full_path, true)?;
         }
       }
     }
