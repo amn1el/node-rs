@@ -53,7 +53,7 @@ pub fn parse(full_path: &str) -> Result<JsonObject> {
     "json" => Ok(serde_json::from_slice::<JsonObject>(content.as_bytes())?),
     "toml" => toml::from_str::<JsonObject>(&content).map_err(|e| Error::new(Status::GenericFailure, e)),
     "yaml" | "yml" => {
-      serde_yml::from_slice::<JsonObject>(content.as_bytes()).map_err(|e| Error::new(Status::GenericFailure, e))
+      yaml_serde::from_slice::<JsonObject>(content.as_bytes()).map_err(|e| Error::new(Status::GenericFailure, e))
     }
     _ => Err(Error::new(Status::InvalidArg, "Invalid file extension")),
   }

@@ -15,11 +15,6 @@ lazy_static::lazy_static! {
   static ref FILENAME_RE: regex::Regex = regex::Regex::new(r"^(.*?)\.[^.]+$").unwrap();
 }
 
-#[inline]
-fn is_locale(locale: &str) -> bool {
-  LOCALE_STRICT_RE.is_match(locale)
-}
-
 /// Manages languages and store in cache
 #[napi(js_name = "I18n")]
 pub struct I18n {
@@ -146,7 +141,7 @@ impl I18n {
   /// @returns {undefined}
   #[napi]
   pub fn reload(&self, locale: Option<String>, key: Option<String>) -> Result<()> {
-    match (locale.clone(), key) {
+    match (locale, key) {
       (Some(locale), Some(key)) => {
         let key = format!("{}/{}/{}", self.directory, locale, key);
         CACHE.remove(&key);
@@ -239,23 +234,11 @@ impl I18n {
 
   // -- Internal methods --
 
-  fn load_file(&self, file_path: &str, is_absolute: bool) -> Result<()> {
-    let caps = FILENAME_RE
-      .captures(file_path)
-      .ok_or_else(|| Error::new(Status::Unknown, format!("Unable to parse filename \"{}\"", file_path)))?;
-    let name = caps.get(if is_absolute { 1 } else { 0 }).unwrap().as_str();
-    let table = parse(file_path)?;
-    CACHE.entry(name.to_string()).or_insert(table);
-
-    Ok(())
-  }
-
   fn load(&self, load_locale: Option<&str>) -> Result<()> {
     let pattern_path = format!("{}/**/**/*.*", self.directory);
     for entry in glob::glob(&pattern_path).unwrap().filter_map(std::result::Result::ok) {
       if entry.is_file() {
         let full_path = entry.normalize();
-
         let locale = LOCALE_RE
           .captures(&full_path)
           .and_then(|c| c.get(0))
@@ -264,17 +247,33 @@ impl I18n {
         if let Some(locale) = locale {
           if let Some(load_locale) = load_locale {
             if locale == load_locale {
-              self.load_file(&full_path, true)?;
+              load_file(&full_path, true)?;
             }
             continue;
           }
 
           if self.locales.contains(&locale.to_string()) {
-            self.load_file(&full_path, true)?;
+            load_file(&full_path, true)?;
           }
         }
       }
     }
     Ok(())
   }
+}
+
+#[inline]
+fn is_locale(locale: &str) -> bool {
+  LOCALE_STRICT_RE.is_match(locale)
+}
+
+fn load_file(file_path: &str, is_absolute: bool) -> Result<()> {
+  let caps = FILENAME_RE
+    .captures(file_path)
+    .ok_or_else(|| Error::new(Status::Unknown, format!("Unable to parse filename \"{}\"", file_path)))?;
+  let name = caps.get(if is_absolute { 1 } else { 0 }).unwrap().as_str();
+  let table = parse(file_path)?;
+
+  CACHE.entry(name.to_string()).or_insert(table);
+  Ok(())
 }

@@ -1,12 +1,9 @@
 {
   "name": "@amniel/node-rs",
   "private": true,
-  "packageManager": "yarn@4.6.0",
+  "packageManager": "pnpm@10.33.0",
   "description": "Node & Rust bindings",
   "author": "Amniel",
-  "workspaces": [
-    "packages/*"
-  ],
   "scripts": {
     "artifacts": "turbo run artifacts --",
     "build": "turbo run build --",
@@ -17,12 +14,12 @@
     "test:ava": "ava -s"
   },
   "devDependencies": {
-    "@napi-rs/cli": "^2.18.4",
-    "@types/node": "^22.9.1",
-    "ava": "^6.2.0",
-    "cross-env": "^7.0.3",
-    "jiti": "1.21.6",
-    "turbo": "^2.3.1",
-    "typescript": "^5.6.3"
+    "@napi-rs/cli": "catalog:",
+    "@types/node": "catalog:",
+    "ava": "catalog:",
+    "cross-env": "catalog:",
+    "jiti": "catalog:",
+    "turbo": "catalog:",
+    "typescript": "catalog:"
   }
 }

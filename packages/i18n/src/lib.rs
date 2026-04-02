@@ -24,30 +24,6 @@ pub fn init(options: config::Config) -> Result<bool> {
   Ok(true)
 }
 
-// Helper para operaciones de lectura
-fn with_i18n_read<F, T>(f: F) -> Result<T>
-where
-  F: FnOnce(&i18n::I18n) -> Result<T>,
-{
-  let i18n = I18N
-    .get()
-    .ok_or_else(|| Error::new(Status::GenericFailure, "Not yet initialized..."))?
-    .read();
-  f(&i18n)
-}
-
-// Helper para operaciones de escritura
-fn with_i18n_write<F, T>(f: F) -> Result<T>
-where
-  F: FnOnce(&mut i18n::I18n) -> Result<T>,
-{
-  let mut i18n = I18N
-    .get()
-    .ok_or_else(|| Error::new(Status::GenericFailure, "Not yet initialized..."))?
-    .write();
-  f(&mut i18n)
-}
-
 /// Sets the fallback locale for the current instance.
 /// @param {string} locale
 /// @returns {undefined}
@@ -102,4 +78,26 @@ pub fn t(key: String, args: Option<file::JsonObject>) -> Result<String> {
 #[napi(ts_args_type = "locale: string, key: string, args?: Record<string, string | number | boolean>")]
 pub fn translate(locale: String, key: String, args: Option<file::JsonObject>) -> Result<String> {
   with_i18n_read(|i18n| i18n.translate(locale, key, args))
+}
+
+fn with_i18n_read<F, T>(f: F) -> Result<T>
+where
+  F: FnOnce(&i18n::I18n) -> Result<T>,
+{
+  let i18n = I18N
+    .get()
+    .ok_or_else(|| Error::new(Status::GenericFailure, "Not yet initialized..."))?
+    .read();
+  f(&i18n)
+}
+
+fn with_i18n_write<F, T>(f: F) -> Result<T>
+where
+  F: FnOnce(&mut i18n::I18n) -> Result<T>,
+{
+  let mut i18n = I18N
+    .get()
+    .ok_or_else(|| Error::new(Status::GenericFailure, "Not yet initialized..."))?
+    .write();
+  f(&mut i18n)
 }

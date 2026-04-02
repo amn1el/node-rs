@@ -18,8 +18,8 @@
   ],
   "scripts": {
     "artifacts": "napi artifacts -d ../../artifacts",
-    "build": "napi build --platform --release --js bindings.js lib",
-    "build:debug": "napi build --platform --js bindings.js lib",
+    "build": "napi build --platform --release --js bindings.js -o lib",
+    "build:debug": "napi build --platform --js bindings.js -o lib",
     "prepublishOnly": "napi prepublish",
     "version": "napi version"
   },
@@ -28,25 +28,18 @@
     "url": "git+https://github.com/TheAmniel/node-rs.git"
   },
   "napi": {
-    "name": "humanize",
-    "triples": {
-      "defaults": false,
-      "additional": [
-        "aarch64-unknown-linux-gnu",
-        "aarch64-unknown-linux-musl",
-        "aarch64-pc-windows-msvc",
-        "x86_64-pc-windows-msvc",
-        "x86_64-unknown-linux-gnu",
-        "x86_64-unknown-linux-musl",
-        "x86_64-unknown-freebsd",
-        "i686-pc-windows-msvc"
-      ]
-    }
+    "binaryName": "humanize",
+    "targets": [
+      "x86_64-pc-windows-msvc",
+      "x86_64-unknown-linux-gnu",
+      "x86_64-unknown-linux-musl",
+      "x86_64-unknown-freebsd"
+    ]
   },
   "engines": {
     "node": ">= 12"
   },
   "devDependencies": {
-    "@napi-rs/cli": "^2.18.4"
+    "@napi-rs/cli": "catalog:"
   }
 }
