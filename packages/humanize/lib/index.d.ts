@@ -7,11 +7,4 @@
  */
 export declare function bytes(bytes: number): string
 
-/** * Humanize a duration in milliseconds to a string.
- *
- * @param {number} ms - the duration in milliseconds.
- * @param {number} [maxUnits=7] - the maximum number of units to display (default is 7).
- * @param {boolean} [short=false] - Whether to use short abbreviations (default is false)
- * @returns {string} a human-readable string representation of the duration.
- */
 export declare function duration(ms: number, maxUnits?: number | undefined | null, short?: boolean | undefined | null): string

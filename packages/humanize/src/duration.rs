@@ -1,41 +1,23 @@
 use napi_derive::napi;
 
-const M_SECOND: f64 = 60.0;
-const M_MINUTE: f64 = 60.0;
-const M_HOUR: f64 = 24.0;
-const M_DAY: f64 = 30.42;
-const M_WEEK: f64 = 4.0;
-const M_MONTH: f64 = 12.0;
-const M_YEAR: f64 = 0.0;
-
-const SECOND: f64 = 1.0;
+const SECOND: f64 = 1000.0;
 const MINUTE: f64 = 60.0 * SECOND;
 const HOUR: f64 = 60.0 * MINUTE;
 const DAY: f64 = 24.0 * HOUR;
 const WEEK: f64 = 7.0 * DAY;
-const MONTH: f64 = 30.42 * DAY;
-const YEAR: f64 = 365.25 * DAY;
+const MONTH: f64 = 30.0 * DAY;
+const YEAR: f64 = 365.0 * DAY;
 
-// TODO
-// const YEARLEAP: f64 = YEAR + (18.0 * HOUR);
-
-// #[inline]
-// const fn is_leap_year(year: i32) -> bool {
-//   year % 4 == 0 && year % 100 != 0 && year % 400 != 0
-// }
-
-/// UNITS is a constant array of tuples containing the divisor, modulus, singular, plural, and abbreviation for each unit
-const UNITS: [(f64, f64, &str, &str, &str); 7] = [
-  (YEAR, M_YEAR, "year", "years", "y"),
-  (MONTH, M_MONTH, "month", "months", "m"),
-  (WEEK, M_WEEK, "week", "weeks", "w"),
-  (DAY, M_DAY, "day", "days", "d"),
-  (HOUR, M_HOUR, "hour", "hours", "h"),
-  (MINUTE, M_MINUTE, "minute", "minutes", "min"),
-  (SECOND, M_SECOND, "second", "seconds", "sec"),
+const UNITS: [(f64, &str, &str, &str); 7] = [
+  (YEAR, "year", "years", "y"),
+  (MONTH, "month", "months", "m"),
+  (WEEK, "week", "weeks", "w"),
+  (DAY, "day", "days", "d"),
+  (HOUR, "hour", "hours", "h"),
+  (MINUTE, "minute", "minutes", "min"),
+  (SECOND, "second", "seconds", "sec"),
 ];
 
-/// Assuming milliseconds shouldn't exceed seconds represented by `f64::MAX`
 const MAX_MS: f64 = f64::MAX / 1000.0;
 
 /**
@@ -55,15 +37,18 @@ pub fn duration(ms: f64, max_units: Option<i32>, short: Option<bool>) -> String 
   let is_short = short.unwrap_or(false);
   let max = max_units.unwrap_or(7).clamp(1, 7) as usize;
   let mut units = Vec::with_capacity(max);
+  let mut remaining_ms = ms;
 
-  for &(divisor, modulus, singular, plural, abbrev) in UNITS.iter().take(max) {
-    let value = if modulus == M_YEAR {
-      round(&(ms / divisor))
-    } else {
-      round(&(ms / divisor)) % modulus
-    };
+  for &(divisor, singular, plural, abbrev) in UNITS.iter() {
+    if units.len() >= max {
+      break;
+    }
+
+    let value = (remaining_ms / divisor).floor();
 
     if value > 0.0 {
+      remaining_ms -= value * divisor;
+
       units.push(if is_short {
         format!("{value:.0}{abbrev}")
       } else if value > 1.0 {
@@ -74,29 +59,21 @@ pub fn duration(ms: f64, max_units: Option<i32>, short: Option<bool>) -> String 
     }
   }
 
-  if is_short || max == 1 {
+  if units.is_empty() {
+    return "0".to_string();
+  }
+
+  if is_short || units.len() == 1 {
     units.join(" ")
   } else {
     let len = units.len();
-    match len {
-      0 => String::new(),
-      1 => units[0].clone(),
-      _ => {
-        let mut result = String::with_capacity(units.iter().map(|s| s.len()).sum::<usize>() + len * 2);
-        for (i, unit) in units.iter().enumerate() {
-          if i > 0 {
-            result.push_str(if i == len - 1 { " and " } else { ", " });
-          }
-          result.push_str(unit);
-        }
-        result
+    let mut result = String::with_capacity(units.iter().map(|s| s.len()).sum::<usize>() + len * 2);
+    for (i, unit) in units.iter().enumerate() {
+      if i > 0 {
+        result.push_str(if i == len - 1 { " and " } else { ", " });
       }
+      result.push_str(unit);
     }
+    result
   }
-}
-
-/// Round the given number to the nearest integer.
-#[inline]
-fn round(ms: &f64) -> f64 {
-  ms.signum() * ms.abs().floor()
 }

@@ -7,13 +7,13 @@ const
   // Discord ID (snowflake)
   DiscordID = 604227193651986443n,
   // Static date for test
-  Utc = new Date('2024-06-09T03:04:41.165Z'),
+  Utc = new Date('2026-04-02T22:08:07.839Z'),
   // Timestamp from snowflake (discord ID)
-  Timestamp = (Utc.getTime() - Number((DiscordID >> 22n) + DiscordEpoch)) / 1000,
+  Timestamp = (Utc.getTime() - Number((DiscordID >> 22n) + DiscordEpoch)),
   // Normal result without args and shorts
-  SinceAbbrev = '4y 10m 2w 15d 18h 41min 32sec',
+  SinceAbbrev = '6y 8m 1w 5d 13h 44min 58sec',
   // Normal result without args
-  Since = '4 years, 10 months, 2 weeks, 15 days, 18 hours, 41 minutes and 32 seconds';
+  Since = '6 years, 8 months, 1 week, 5 days, 13 hours, 44 minutes and 58 seconds';
 
 test('duration', (t) => {
   let duration = humanize.duration(Timestamp);
@@ -31,53 +31,53 @@ test('duration', (t) => {
 test('maxUnits', (t) => {
   let duration = humanize.duration(Timestamp, 1);
   t.not(duration, '0');
-  t.is(duration, '4 years', 'duration is not equal with max 1');
+  t.is(duration, '6 years', 'duration is not equal with max 1');
 
   duration = humanize.duration(Timestamp, 2);
   t.not(duration, '0');
-  t.is(duration, '4 years and 10 months', 'duration is not equal with max 2');
+  t.is(duration, '6 years and 8 months', 'duration is not equal with max 2');
 
   duration = humanize.duration(Timestamp, 3);
   t.not(duration, '0');
-  t.is(duration, '4 years, 10 months and 2 weeks', 'duration is not equal with max 3');
+  t.is(duration, '6 years, 8 months and 1 week', 'duration is not equal with max 3');
 
   duration = humanize.duration(Timestamp, 4);
   t.not(duration, '0');
-  t.is(duration, '4 years, 10 months, 2 weeks and 15 days', 'duration is not equal with max 4');
+  t.is(duration, '6 years, 8 months, 1 week and 5 days', 'duration is not equal with max 4');
 
   duration = humanize.duration(Timestamp, 5);
   t.not(duration, '0');
-  t.is(duration, '4 years, 10 months, 2 weeks, 15 days and 18 hours', 'duration is not equal with max 5');
+  t.is(duration, '6 years, 8 months, 1 week, 5 days and 13 hours', 'duration is not equal with max 5');
 
   duration = humanize.duration(Timestamp, 6);
   t.not(duration, '0');
-  t.is(duration, '4 years, 10 months, 2 weeks, 15 days, 18 hours and 41 minutes', 'duration is not equal with max 6');
+  t.is(duration, '6 years, 8 months, 1 week, 5 days, 13 hours and 44 minutes', 'duration is not equal with max 6');
 });
 
 test('short', (t) => {
   let duration = humanize.duration(Timestamp, 1, true);
   t.not(duration, '0');
-  t.is(duration, '4y', 'duration is not equal with max 1 and short');
+  t.is(duration, '6y', 'duration is not equal with max 1 and short');
 
   duration = humanize.duration(Timestamp, 2, true);
   t.not(duration, '0');
-  t.is(duration, '4y 10m', 'duration is not equal with max 2 and short');
+  t.is(duration, '6y 8m', 'duration is not equal with max 2 and short');
 
   duration = humanize.duration(Timestamp, 3, true);
   t.not(duration, '0');
-  t.is(duration, '4y 10m 2w', 'duration is not equal with max 3 and short');
+  t.is(duration, '6y 8m 1w', 'duration is not equal with max 3 and short');
 
   duration = humanize.duration(Timestamp, 4, true);
   t.not(duration, '0');
-  t.is(duration, '4y 10m 2w 15d', 'duration is not equal with max 4 and short');
+  t.is(duration, '6y 8m 1w 5d', 'duration is not equal with max 4 and short');
 
   duration = humanize.duration(Timestamp, 5, true);
   t.not(duration, '0');
-  t.is(duration, '4y 10m 2w 15d 18h', 'duration is not equal with max 5 and short');
+  t.is(duration, '6y 8m 1w 5d 13h', 'duration is not equal with max 5 and short');
 
   duration = humanize.duration(Timestamp, 6, true);
   t.not(duration, '0');
-  t.is(duration, '4y 10m 2w 15d 18h 41min', 'duration is not equal with max 6 and short');
+  t.is(duration, '6y 8m 1w 5d 13h 44min', 'duration is not equal with max 6 and short');
 
   duration = humanize.duration(Timestamp, 7, true);
   t.not(duration, '0');
