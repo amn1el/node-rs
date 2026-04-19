@@ -1,0 +1,27 @@
+{
+  "name": "@amniel/humanize-linux-x64-musl",
+  "version": "0.1.0",
+  "cpu": [
+    "x64"
+  ],
+  "main": "humanize.linux-x64-musl.node",
+  "files": [
+    "humanize.linux-x64-musl.node"
+  ],
+  "description": "duration and bytes to human-readable (private use)",
+  "author": "Amniel",
+  "license": "Apache-2.0",
+  "engines": {
+    "node": ">= 12"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/TheAmniel/node-rs.git"
+  },
+  "os": [
+    "linux"
+  ],
+  "libc": [
+    "musl"
+  ]
+}

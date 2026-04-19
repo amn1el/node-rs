@@ -12,6 +12,7 @@
   aes = { workspace = true }
   ctr = { workspace = true }
   hex = { workspace = true }
+  hybrid-array = { workspace = true }
 
   napi = { workspace = true }
   napi-derive = { workspace = true }

@@ -4,6 +4,7 @@
   "description": "duration and bytes to human-readable (private use)",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
+  "browser": "lib/browser.js",
   "license": "Apache-2.0",
   "author": "Amniel",
   "exports": {
@@ -33,7 +34,8 @@
       "x86_64-pc-windows-msvc",
       "x86_64-unknown-linux-gnu",
       "x86_64-unknown-linux-musl",
-      "x86_64-unknown-freebsd"
+      "x86_64-unknown-freebsd",
+      "wasm32-wasip1-threads"
     ]
   },
   "engines": {

@@ -1,0 +1,26 @@
+{
+  "name": "@amniel/i18n-linux-x64-gnu",
+  "version": "0.1.0",
+  "cpu": [
+    "x64"
+  ],
+  "main": "i18n.linux-x64-gnu.node",
+  "files": [
+    "i18n.linux-x64-gnu.node"
+  ],
+  "author": "Amniel",
+  "license": "Apache-2.0",
+  "engines": {
+    "node": ">= 12"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/TheAmniel/node-rs.git"
+  },
+  "os": [
+    "linux"
+  ],
+  "libc": [
+    "glibc"
+  ]
+}

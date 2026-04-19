@@ -1,0 +1,24 @@
+{
+  "name": "@amniel/sqlite3-win32-x64-msvc",
+  "version": "0.1.0",
+  "cpu": [
+    "x64"
+  ],
+  "main": "sqlite3.win32-x64-msvc.node",
+  "files": [
+    "sqlite3.win32-x64-msvc.node"
+  ],
+  "description": "sqlite3 utility (private use)",
+  "author": "Amniel",
+  "license": "Apache-2.0",
+  "engines": {
+    "node": ">= 12"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/TheAmniel/node-rs.git"
+  },
+  "os": [
+    "win32"
+  ]
+}

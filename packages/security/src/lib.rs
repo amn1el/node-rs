@@ -1,15 +1,16 @@
 extern crate napi_allocator;
 
 use aes::{
-  cipher::{generic_array, KeyIvInit, StreamCipher},
   Aes256,
+  cipher::{KeyIvInit, StreamCipher},
 };
 use ctr::Ctr128BE;
-use napi::{bindgen_prelude::Buffer, Error, Result, Status};
+use hybrid_array::{Array, typenum};
+use napi::{Error, Result, Status, bindgen_prelude::Buffer};
 use napi_derive::napi;
 
-type Key = generic_array::GenericArray<u8, generic_array::typenum::U32>;
-type Nonce = generic_array::GenericArray<u8, generic_array::typenum::U16>;
+type Key = Array<u8, typenum::U32>;
+type Nonce = Array<u8, typenum::U16>;
 
 /**
  * Encrypt a given text using the provided secret key and initialization vector (IV).
@@ -93,8 +94,10 @@ fn get_key_and_nonce(secret: &Buffer, iv: &Buffer) -> Result<(Key, Nonce)> {
     ));
   }
 
-  let key = Key::from_slice(secret);
-  let nonce = Nonce::from_slice(iv);
+  let key = Key::try_from(secret.as_ref())
+    .map_err(|e| Error::new(Status::GenericFailure, format!("Error converting secret key: {e}")))?;
+  let nonce = Nonce::try_from(iv.as_ref())
+    .map_err(|e| Error::new(Status::GenericFailure, format!("Error converting iv: {e}")))?;
 
-  Ok((*key, *nonce))
+  Ok((key, nonce))
 }

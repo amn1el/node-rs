@@ -1,0 +1,27 @@
+{
+  "name": "@amniel/sqlite3-linux-x64-musl",
+  "version": "0.1.0",
+  "cpu": [
+    "x64"
+  ],
+  "main": "sqlite3.linux-x64-musl.node",
+  "files": [
+    "sqlite3.linux-x64-musl.node"
+  ],
+  "description": "sqlite3 utility (private use)",
+  "author": "Amniel",
+  "license": "Apache-2.0",
+  "engines": {
+    "node": ">= 12"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/TheAmniel/node-rs.git"
+  },
+  "os": [
+    "linux"
+  ],
+  "libc": [
+    "musl"
+  ]
+}

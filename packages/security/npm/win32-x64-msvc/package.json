@@ -1,0 +1,24 @@
+{
+  "name": "@amniel/security-win32-x64-msvc",
+  "version": "0.1.0",
+  "cpu": [
+    "x64"
+  ],
+  "main": "security.win32-x64-msvc.node",
+  "files": [
+    "security.win32-x64-msvc.node"
+  ],
+  "description": "Security utility (private use)",
+  "author": "Amniel",
+  "license": "Apache-2.0",
+  "engines": {
+    "node": ">= 12"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/TheAmniel/node-rs.git"
+  },
+  "os": [
+    "win32"
+  ]
+}

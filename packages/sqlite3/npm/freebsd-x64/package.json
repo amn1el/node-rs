@@ -1,0 +1,24 @@
+{
+  "name": "@amniel/sqlite3-freebsd-x64",
+  "version": "0.1.0",
+  "cpu": [
+    "x64"
+  ],
+  "main": "sqlite3.freebsd-x64.node",
+  "files": [
+    "sqlite3.freebsd-x64.node"
+  ],
+  "description": "sqlite3 utility (private use)",
+  "author": "Amniel",
+  "license": "Apache-2.0",
+  "engines": {
+    "node": ">= 12"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/TheAmniel/node-rs.git"
+  },
+  "os": [
+    "freebsd"
+  ]
+}
